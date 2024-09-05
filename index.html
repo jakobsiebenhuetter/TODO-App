@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TODO-App</title>
+    
+    <style>
+      body {
+        text-align: center;
+        font-family: "Lucida Sans";
+        background-color: rgba(240, 222, 206, 0.482);
+      }
+
+      main {
+        margin: 0 auto;
+        width: 50%;
+        height: 190px;
+        background-color: rgba(211, 106, 15, 0.482);
+        border-radius: 6px;
+        
+      }
+
+      #add-todo-input{
+        width: 50%;
+        height: 25px;
+        border-radius: 6px;
+        
+      }
+      h1{
+        padding-top: 20px;
+      }
+      input:hover {
+        
+        background-color: rgba(211, 106, 15, 0.482);
+      }
+
+      div {
+        text-align: center;
+      
+      }
+
+
+      ul {
+        list-style: none;
+        width: 80%;
+        margin: 70px auto;
+
+      }
+      
+      button {
+        width: 80px;
+        height: 30px;
+        border-radius: 6px;
+        
+      }
+      
+      #tasks { 
+        text-align: center ;
+        padding: 15px;
+    
+        
+      }
+      
+      .task {
+        
+        display: flex;
+        justify-content: space-between;
+        margin-top: 5px;
+        padding: 10px;
+        background-color: rgba(211, 106, 15, 0.482);
+        border: 2px solid black;
+        border-radius: 6px;
+      
+
+      }
+
+      .task button {
+        margin-left: 10px;
+        
+      }
+
+       .task span {
+        flex-grow: 1;
+        word-wrap: break-word;
+
+
+      }
+      
+
+      #button-group {
+        
+        display: flex;
+        gap: 5px;
+      }
+
+      #button-group button {
+        width: 80px;
+        height: 30px;
+      
+      }
+
+
+
+    </style>
+
+  </head>
+  <body>
+    <main>
+      <div>
+        <h1>Meine TODOs</h1>
+
+        <input type="text" id="add-todo-input" placeholder="Todo" />
+        <button id="add-todo-button">Speichern</button>
+
+        <div id="tasks">
+
+          <ul id="all-todos"></ul>
+
+        </div>
+      </div>
+    </main>
+
+
+    <script>
+
+      let myArrayListofToDos = [];
+      let index = 0;
+      let editIndex = -1;
+      let data;
+      const inputaddToDos = window.document.getElementById('add-todo-input');
+      const buttonaddToDo = window.document.getElementById('add-todo-button');
+
+     
+// lokal Storage
+      function getTasksFromStorage() {
+        
+         data = localStorage.getItem('TODOs'); 
+
+         myArrayListofToDos = data ? JSON.parse(data) : [];
+         //myArrayListofToDos = todos;
+         console.log(myArrayListofToDos);
+
+      };
+ 
+    
+    function renderTask() {
+     
+      if (myArrayListofToDos.length === 0) {
+        console.log(true);
+        
+        const actualTodos = window.document.getElementById('all-todos');
+        const actualTodo = window.document.createElement('li');
+        actualTodo.textContent = 'Keine Tasks'
+        
+        actualTodos.innerHTML = '';
+        actualTodos.appendChild(actualTodo);
+
+      }
+
+      else 
+
+      {
+        
+      const actualTodos = window.document.getElementById('all-todos');
+      actualTodos.innerHTML = '';
+      
+      myArrayListofToDos.forEach((todo,index) => {
+        
+        const actualTodo = window.document.createElement('li');
+        actualTodo.classList.add('task');
+
+        const todoText = window.document.createElement('span');
+        const deleteButton = window.document.createElement('button');
+        const editButton = window.document.createElement('button');
+        const buttonGroup = window.document.createElement('div')
+        deleteButton.textContent = 'Löschen';
+        deleteButton.style.backgroundColor = 'red';
+        editButton.style.backgroundColor = 'green';
+        editButton.textContent = 'Bearbeiten';
+
+        editButton.addEventListener('click',function () {
+          inputaddToDos.value = myArrayListofToDos[index];
+          editIndex = index;
+  
+});
+
+
+        deleteButton.addEventListener('click',function () {
+          console.log(todo,index)
+
+          if (editIndex == -1)
+           {
+          myArrayListofToDos.splice(index,1);
+          saveTask();
+          renderTask();
+          } 
+          else 
+          {
+            alert('Du musst zuerst die Bearbeitung fertig machen');
+          } 
+          
+        })
+
+        buttonGroup.appendChild(editButton);
+        buttonGroup.appendChild(deleteButton);
+        buttonGroup.classList.add('button-group');
+        
+      actualTodo.textContent = todo;
+      console.log(todo);
+      actualTodo.appendChild(todoText);
+      actualTodo.appendChild(buttonGroup);
+      
+      actualTodos.appendChild(actualTodo);
+        
+    });
+  
+  }
+}
+
+      function addTask() {
+       
+        if(editIndex >= 0) 
+        {
+          myArrayListofToDos[editIndex] = inputaddToDos.value;
+          editIndex = -1;
+        
+        }
+
+        else 
+        {
+          let todo = inputaddToDos.value;
+          myArrayListofToDos.push(todo);
+          console.log(myArrayListofToDos);
+        }
+
+        saveTask();
+        renderTask();
+        inputaddToDos.value = '';
+        
+
+      };
+
+      function saveTask(){
+         localStorage.setItem('TODOs', JSON.stringify(myArrayListofToDos));
+
+      };
+
+      buttonaddToDo.addEventListener('click', () => {
+
+        addTask();       
+        
+      });    
+
+
+// Main-Program
+
+      getTasksFromStorage();
+
+      renderTask();
+      
+
+</script>
+
+  </body>
+</html>
